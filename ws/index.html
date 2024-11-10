@@ -1,0 +1,77 @@
+<html>
+<meta charset='utf-8' />
+
+<head>
+    <title>WebSocket Test</title>
+</head>
+
+<head>
+    <title>WebSocket Test</title>
+</head>
+
+<body>
+    <img id='live' src=''>
+    <br>
+    <h2>LED Control</h2>
+    <table>
+        <tr>
+            <td><button id='onButton' onclick='onPress()' disabled>LED ON</button></td>
+            <td><button id='offButton' onclick='offPress()' disabled>LED OFF</button></td>
+        </tr>
+    </table>
+</body>
+
+</html>
+<script language='javascript' type='text/javascript'>
+    var host = 'ws://server_ip:81';
+    var onButton;
+    var offButton;
+    var websocket;
+    var img;
+    if (!('WebSocket' in window)) {
+        alert('Your browser does not support web sockets');
+    } else {
+        setup();
+    }
+    function setup() {
+        onButton = document.getElementById('onButton');
+        offButton = document.getElementById('offButton');
+        img = document.getElementById('live');
+        websocket = new WebSocket(host);
+        websocket.binaryType = 'arraybuffer';
+        websocket.onopen = function () { onOpen() };
+        websocket.onclose = function () { onClose() };
+        websocket.onmessage = function (evt) { onMessage(evt) };
+        websocket.onerror = function (evt) { onError(evt) };
+    }
+    function onMessage(evt) {
+        var bytes = new Uint8Array(evt.data);
+        var binary = '';
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i])
+        }
+        var img = document.getElementById('live');
+        img.src = 'data:image/jpg;base64,' + window.btoa(binary);
+    }
+    function onPress() {
+        websocket.send('LED_ON');
+    }
+    function offPress() {
+        websocket.send('LED_OFF');
+    }
+    function onOpen() {
+        console.log('Connected');
+        onButton.disabled = false;
+        offButton.disabled = false;
+    }
+    function onClose() {
+        showServerResponse('The connection has been closed.');
+        onButton.disabled = true;
+        offButton.disabled = true;
+        setTimeout(function () { wsConnect(url) }, 2000);
+    }
+    function onError(evt) {
+        console.log("ERROR: " + evt.data);
+    } 
+</script>
