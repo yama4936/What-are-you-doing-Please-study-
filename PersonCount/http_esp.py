@@ -14,6 +14,7 @@ current_person_ids = set()
 person_count = 0
 
 start_time = None  # タイマーの初期化
+end_time = None
 
 while cap.isOpened():
     ret, frame = cap.read()
@@ -44,13 +45,18 @@ while cap.isOpened():
     
     # カウントが1の場合、タイマーを開始または維持
     if person_count != 0:
+        end_time = None
         if start_time is None:
             start_time = time.time()  # タイマーを開始
-        if time.time() - start_time >= 60:  # 60秒経過チェック
+        if time.time() - start_time >= 30:  # 30秒経過チェック
             winsound.PlaySound("勉強してください.wav", winsound.SND_FILENAME)  # 音声ファイルを再生
-            start_time = None  # タイマーをリセット
+            start_time = None  # タイマーをリセット    
     else:
-        start_time = None  # カウントが0のときタイマーをリセット
+        if end_time is None:
+            end_time = time.time()  # タイマーを開始
+        if time.time() - end_time >= 2:
+            start_time = None  # タイマーをリセット
+            end_time = None
         
     # デバッグ用（画面に現在のタイマー時間とカウントを表示）
     elapsed_time = time.time() - start_time if start_time else 0
