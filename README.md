@@ -1,1 +1,3 @@
-# What-are-you-doing-Please-study-
+esp32を使った人物検出です。
+esp32の設定は.ionファイルにあります。
+http_esp.pyを実行することで動きます。
